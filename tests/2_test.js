@@ -9,22 +9,22 @@ const url = require('url');
 // List of URLs to scrape
 const urls = [
     'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=4291A&MODE2=StartFromTop_Directory&VIP=010',
-    'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=1616A&MODE2=StartFromTop_Directory&VIP=010',
-    'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=1842A&MODE2=StartFromTop_Directory&VIP=010',
-    'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=1946A&MODE2=StartFromTop_Directory&VIP=010',
-    'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=3545A&MODE2=StartFromTop_Directory&VIP=010',
-    'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=2040A&MODE2=StartFromTop_Directory&VIP=010',
-    'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=2483A&MODE2=StartFromTop_Directory&VIP=010',
-    'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=4506A&MODE2=StartFromTop_Directory&VIP=010',
-    'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=2215A&MODE2=StartFromTop_Directory&VIP=010',
-    'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=1304A&MODE2=StartFromTop_Directory&VIP=010',
-    'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=3551A&MODE2=StartFromTop_Directory&VIP=010',
-    'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=4981A&MODE2=StartFromTop_Directory&VIP=010',
-    'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=4903A&MODE2=StartFromTop_Directory&VIP=010',
-    'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=2013A&MODE2=StartFromTop_Directory&VIP=010',
-    'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=4462A&MODE2=StartFromTop_Directory&VIP=010',
-    'https://www.apartmentdata.com/EXERequest/ADC_ShowTop.asp?CLEAROPTIONS=Y&VIP=010',
-    'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=2916C&MODE2=StartFromTop_Directory&VIP=010'
+    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=1616A&MODE2=StartFromTop_Directory&VIP=010',
+    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=1842A&MODE2=StartFromTop_Directory&VIP=010',
+    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=1946A&MODE2=StartFromTop_Directory&VIP=010',
+    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=3545A&MODE2=StartFromTop_Directory&VIP=010',
+    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=2040A&MODE2=StartFromTop_Directory&VIP=010',
+    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=2483A&MODE2=StartFromTop_Directory&VIP=010',
+    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=4506A&MODE2=StartFromTop_Directory&VIP=010',
+    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=2215A&MODE2=StartFromTop_Directory&VIP=010',
+    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=1304A&MODE2=StartFromTop_Directory&VIP=010',
+    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=3551A&MODE2=StartFromTop_Directory&VIP=010',
+    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=4981A&MODE2=StartFromTop_Directory&VIP=010',
+    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=4903A&MODE2=StartFromTop_Directory&VIP=010',
+    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=2013A&MODE2=StartFromTop_Directory&VIP=010',
+    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=4462A&MODE2=StartFromTop_Directory&VIP=010',
+    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowTop.asp?CLEAROPTIONS=Y&VIP=010',
+    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=2916C&MODE2=StartFromTop_Directory&VIP=010'
     // Add more URLs here
 ];
 
@@ -59,12 +59,59 @@ async function scrapeWebsiteWithCookies(page, targetUrl) {
         await page.screenshot({ path: screenshotPath, fullPage: true });
         console.log(`Full-page screenshot saved at ${screenshotPath}`);
 
-        // console.debug(content)
+        
+        // extract paratment-id
+        // AptFontMargin
+        // const apartment_id_html = await page.evaluate(() => {
+        //     // Using XPath to select the element with class 'apartments' and id 'first'
+        //     const element = document.evaluate(
+        //         "//div[contains(@class, 'AptFontMargin') and @id='first']",
+        //         document,
+        //         null,
+        //         XPathResult.FIRST_ORDERED_NODE_TYPE,
+        //         null
+        //     ).singleNodeValue;
+            
+        //     return element ? element.outerHTML : null;
+        // });
 
-        // // / Select the content using XPath
-        // const [element] = await page.$x('/html/body/table/tbody/tr[3]/td/font/form/table[2]/tbody/tr/td[1]/table/tbody/tr/td/table[2]/tbody/tr/td[1]/div/font/font[1]/b');
-        // const html = await page.evaluate(el => el.outerHTML, element);
-  // Use XPath to select the specific content and get its outerHTML
+        const apartmentID = await page.evaluate(() => {
+            // Use XPath to find the parent element
+            const parentElement = document.evaluate(
+                "//div[contains(@class, 'AptFontMargin')]",
+                document,
+                null,
+                XPathResult.FIRST_ORDERED_NODE_TYPE,
+                null
+            ).singleNodeValue;
+        
+            if (parentElement) {
+                // Now use another XPath relative to the parent element to select the child 'ID' element
+                const element = document.evaluate(
+                    ".//font[contains(text(), 'ID:')]", // XPath relative to the parent element
+                    parentElement, // Parent element
+                    null,
+                    XPathResult.FIRST_ORDERED_NODE_TYPE,
+                    null
+                ).singleNodeValue;
+        
+                // Get the next sibling node, which contains the 'ID'
+                const apartmentIDText = element ? element.nextSibling.nodeValue.trim() : null;
+        
+                return apartmentIDText; // Return the extracted ID value
+            } else {
+                return null;
+            }
+        });
+        
+        console.log(apartmentID); // Logs the 'ID' value (e.g., '4291A')
+        
+
+
+        // console.log(apartmentID);  // Logs '4291A'
+
+
+
   const html = await page.evaluate(() => {
     const element = document.evaluate(
         '/html/body/table/tbody/tr[3]/td/font/form/table[2]/tbody/tr/td[1]/table/tbody/tr/td/table[2]/tbody/tr/td[1]/div/font/font[1]/b', 
