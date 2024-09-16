@@ -313,3 +313,5 @@ tests/screenshot/*
 tests/cookies.json
 
 tests/*.csv
+
+project_files.txt

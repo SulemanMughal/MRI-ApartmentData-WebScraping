@@ -4,37 +4,36 @@ const fs = require('fs');
 const path = require('path');
 const csvWriter = require('csv-write-stream');
 const url = require('url');
+const {urls} = require("./urls")
 
-
-// List of URLs to scrape
-const urls = [
-    'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=4291A&MODE2=StartFromTop_Directory&VIP=010',
-    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=1616A&MODE2=StartFromTop_Directory&VIP=010',
-    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=1842A&MODE2=StartFromTop_Directory&VIP=010',
-    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=1946A&MODE2=StartFromTop_Directory&VIP=010',
-    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=3545A&MODE2=StartFromTop_Directory&VIP=010',
-    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=2040A&MODE2=StartFromTop_Directory&VIP=010',
-    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=2483A&MODE2=StartFromTop_Directory&VIP=010',
-    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=4506A&MODE2=StartFromTop_Directory&VIP=010',
-    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=2215A&MODE2=StartFromTop_Directory&VIP=010',
-    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=1304A&MODE2=StartFromTop_Directory&VIP=010',
-    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=3551A&MODE2=StartFromTop_Directory&VIP=010',
-    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=4981A&MODE2=StartFromTop_Directory&VIP=010',
-    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=4903A&MODE2=StartFromTop_Directory&VIP=010',
-    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=2013A&MODE2=StartFromTop_Directory&VIP=010',
-    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=4462A&MODE2=StartFromTop_Directory&VIP=010',
-    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowTop.asp?CLEAROPTIONS=Y&VIP=010',
-    // 'https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=2916C&MODE2=StartFromTop_Directory&VIP=010'
-    // Add more URLs here
-];
 
 // Initialize the CSV writer
-const writer = csvWriter({ headers: ["Property Name", "Address", "Type", "Price", "Size (sf)","Floor Plan", "Description"] });
+// const writer = csvWriter({ headers: ["Property Name", "Address", "Type", "Price", "Size (sf)","Floor Plan", "Description"] });
+const writer = csvWriter({ headers: [
+    "ID"	,
+    "Title",	
+    "Province / State",	
+    "City / Town",	
+    "real_estate_property_price_short",	
+    "real_estate_second-price",	
+    "real_estate_property_size"	,
+    "real_estate_second-size",	
+    "real_estate_property_bedrooms",	
+    "real_estate_second-bedroom",	
+    "real_estate_property_bathrooms",	
+    "real_estate_second-bathroom",	
+    "real_estate_property_address",	
+    "real_estate_property_zip"	,
+    "real_estate_property_location"	,
+    "Floor Plans_floor_name"	,
+    "Floor Plans_floor_price",	
+    "Floor Plans_floor_size",	
+    "Floor Plans_bedroom",	
+    "Floor Plans_bathroom"
+] });
 writer.pipe(fs.createWriteStream('apartment_data.csv'));
 
 async function scrapeWebsiteWithCookies(page, targetUrl) {
-    // const browser = await puppeteer.launch({ headless: true });
-    // const page = await browser.newPage();
 
     try {
         // Load the cookies from the file
@@ -59,227 +58,226 @@ async function scrapeWebsiteWithCookies(page, targetUrl) {
         await page.screenshot({ path: screenshotPath, fullPage: true });
         console.log(`Full-page screenshot saved at ${screenshotPath}`);
 
-        
-        // extract paratment-id
-        // AptFontMargin
-        // const apartment_id_html = await page.evaluate(() => {
-        //     // Using XPath to select the element with class 'apartments' and id 'first'
-        //     const element = document.evaluate(
-        //         "//div[contains(@class, 'AptFontMargin') and @id='first']",
-        //         document,
-        //         null,
-        //         XPathResult.FIRST_ORDERED_NODE_TYPE,
-        //         null
-        //     ).singleNodeValue;
-            
-        //     return element ? element.outerHTML : null;
-        // });
-
-        const apartmentID = await page.evaluate(() => {
-            // Use XPath to find the parent element
-            const parentElement = document.evaluate(
-                "//div[contains(@class, 'AptFontMargin')]",
-                document,
-                null,
-                XPathResult.FIRST_ORDERED_NODE_TYPE,
-                null
-            ).singleNodeValue;
-        
-            if (parentElement) {
-                // Now use another XPath relative to the parent element to select the child 'ID' element
-                const element = document.evaluate(
-                    ".//font[contains(text(), 'ID:')]", // XPath relative to the parent element
-                    parentElement, // Parent element
-                    null,
-                    XPathResult.FIRST_ORDERED_NODE_TYPE,
-                    null
-                ).singleNodeValue;
-        
-                // Get the next sibling node, which contains the 'ID'
-                const apartmentIDText = element ? element.nextSibling.nodeValue.trim() : null;
-        
-                return apartmentIDText; // Return the extracted ID value
-            } else {
-                return null;
-            }
-        });
-        
-        console.log(apartmentID); // Logs the 'ID' value (e.g., '4291A')
-        
-
-
-        // console.log(apartmentID);  // Logs '4291A'
-
-
-
-  const html = await page.evaluate(() => {
-    const element = document.evaluate(
-        '/html/body/table/tbody/tr[3]/td/font/form/table[2]/tbody/tr/td[1]/table/tbody/tr/td/table[2]/tbody/tr/td[1]/div/font/font[1]/b', 
-        document, 
-        null, 
-        XPathResult.FIRST_ORDERED_NODE_TYPE, 
-        null
-    ).singleNodeValue;
-    return element ? element.outerHTML : null;
-});
-
-if (!html) {
-    throw new Error('Failed to find the element using the provided XPath.');
-}
-
-// Use XPath to select the specific content and get its outerHTML
-const htmlAddress = await page.evaluate(() => {
-    const element = document.evaluate(
-        '/html/body/table/tbody/tr[3]/td/font/form/table[2]/tbody/tr/td[1]/table/tbody/tr/td/table[2]/tbody/tr/td[1]/div/font', 
-        document, 
-        null, 
-        XPathResult.FIRST_ORDERED_NODE_TYPE, 
-        null
-    ).singleNodeValue;
-    return element ? element.outerHTML : null;
-});
-
-if (!html) {
-    throw new Error('Failed to find the element using the provided XPath.');
-}
-        // Load the selected HTML into Cheerio
-        const $1 = cheerio.load(html);
-
-        // const $Address = cheerio.load(htmlAddress)
-
-        // console.debug($Address.text().trim())
-        // console.debug(htmlAddress)
-
-        // Load the selected HTML into Cheerio
-        const $Address = cheerio.load(htmlAddress);
-        // /html/body/table/tbody/tr[3]/td/font/form/table[2]/tbody/tr/td[1]/table/tbody/tr/td/table[2]/tbody/tr/td[1]/div/font/text()[2]
-        // /html/body/table/tbody/tr[3]/td/font/form/table[2]/tbody/tr/td[1]/table/tbody/tr/td/table[2]/tbody/tr/td[1]/div/font/text()[2]
-
-        // Extract the address from the selected HTML
-        // const addressGet = $Address('font').contents().filter(function() {
-        //     return this.nodeType === 3 ;
-        // }).text().trim();
-        let addressGet = '';
-        $Address('br').each((index, element) => {
-            const nextNode = element.nextSibling;
-            if (nextNode && nextNode.nodeType === 3) { // NodeType 3 is a text node
-                addressGet = nextNode.nodeValue.trim();
-                return false; // Break the loop once we find the address
-            }
-        });
-
-        const propertyName = $1.text().trim() || "";  // Replace with correct selector if needed
-        const address = addressGet || "";  // Replace with correct selector if needed
-        
-        // console.debug(propertyName, address)
-
-          // Use XPath to select the specific content and get its outerHTML
-          const descriptionHTML = await page.evaluate(() => {
-            const element = document.evaluate(
-                '/html/body/table/tbody/tr[3]/td/font/form/table[2]/tbody/tr/td[1]/table/tbody/tr/td/a[1]/table[2]', 
-                document, 
-                null, 
-                XPathResult.FIRST_ORDERED_NODE_TYPE, 
-                null
-            ).singleNodeValue;
-            return element ? element.outerHTML : null;
-        });
-
-        if (!descriptionHTML) {
-            throw new Error('Failed to find the element using the provided XPath.');
-        }
-
-        
-        // console.debug(descriptionHTML)
-        // Load the selected HTML into Cheerio
-        const $Description = cheerio.load(descriptionHTML);
-
-        // Extract useful information
-        // Extract useful information
-        const deposit = $Description('font:contains("Deposit:")').first().text().replace(/Deposit:/, '').trim();
-        
-        // const fees = $Description('font:contains("Fees:")').text().replace(/Fees:/, '').trim();
-        // const terms = $Description('font:contains("Terms:")').text().replace(/Terms:/, '').trim();
-        // const officeHours = $Description('font:contains("Office Hrs:")').text().replace(/Office Hrs:/, '').trim();
-        // const pets = $Description('font:contains("Pets:")').parent().text().replace(/Pets:/, '').trim();
-        // const schoolDistrict = $Description('font:contains("School District:")').parent().text().replace(/School District:/, '').trim();
-        // const elementary = $Description('font:contains("Elem:")').next().text().trim();
-        // const intermediate = $Description('font:contains("Int:")').next().text().trim();
-        // const middleSchool = $Description('font:contains("Mid:")').next().text().trim();
-        // const highSchool = $Description('font:contains("High:")').next().text().trim();
-
-        
-
-
-        // Log the extracted information
-        // console.log('Deposit:', deposit);
-        // console.log('Fees:', fees);
-        // console.log('Terms:', terms);
-        // console.log('Office Hours:', officeHours);
-        // console.log('Pets:', pets);
-        // console.log('School District:', schoolDistrict);
-        // console.log('Elementary School:', elementary);
-        // console.log('Intermediate School:', intermediate);
-        // console.log('Middle School:', middleSchool);
-        // console.log('High School:', highSchool);
-        // Extract Property Name and Address
-        
-
-
-        const description = $1('.main-content .info-block').text().trim();  // Replace with correct selector if needed
 
         const $ = cheerio.load(content);
+        const fontWithID = $('div.AptFontMargin font:contains("ID:") font:first');
+const id_apartments = $(fontWithID[0]);
+const apartmentID = id_apartments[0]?.nextSibling?.nodeValue.trim();
+
+    
+    console.log("Apartment ID:", apartmentID);
+
+    const apartmentTitle = $('div.AptFont2Margin font font:first');
+const title_apartments =$(apartmentTitle[0]);
+// console.debug($(title_apartments).text().trim())
+const apartments_title = $(title_apartments).text().trim();
+
+    
+    console.log("Apartment Title:", apartments_title);
 
 
-        // Extract the image path
-        // const imagePath = $('img[name="IMAGE_Floorplan"]').attr('src');
-        
-        // // Save the image path as a string
-        // console.log('Image Path:', imagePath);
-        // Extract the relative image path
-        const relativeImagePath = $('img[name="IMAGE_Floorplan"]').attr('src');
-        
-        // Ensure full URL
-        const baseURL = 'https://www.apartmentdata.com';
-        const fullImagePath = url.resolve(baseURL, relativeImagePath);
+    // apartment-address
 
-        // Save the full image path as a string
-        // console.log('Full Image Path:', fullImagePath);
-        
-$('table.Apt2').each((index, element) => {
-    const type = $(element).find('b').first().text().trim();  // Extract the main type (e.g., 1 Bedroom, 2 Bedrooms, etc.)
+    const apartmentAddress = $('div.AptFont2Margin font br:first');
+const apartmentAddress_elem =$(apartmentAddress[0]);
+// console.debug($(title_apartments).text().trim())
+const apartmentAddress_value = apartmentAddress_elem[0]?.nextSibling?.nodeValue.trim();
 
-    $(element).find('tr[onmouseover]').each((idx, row) => {
-        const typeDetail = $(row).find('td').eq(0).text().trim();  // Extract the specific type detail (e.g., 1x1, 2x2, etc.)
-        const price = $(row).find('td').eq(1).text().trim();  // Extract the price
-        const size = $(row).find('td').eq(2).text().trim();  // Extract the size
+    
+    console.log("apartmentAddress_value:", apartmentAddress_value);
+// Split the address by commas first to separate street, city, and state/zip
+const addressParts = apartmentAddress_value.split(',');
 
-        const fullType = `${type} ${typeDetail}`;  // Combine the main type and detail type into a single value
-        // console.debug(`${type} `)
-        if(`${type}` !== "Type"){
-            // Write the combined data to the CSV file in a single row
-        writer.write({
-            "Property Name": propertyName,
-            "Address": address,
-            "Type": fullType,  // Combined type (e.g., "1 Bedroom 1x1")
-            "Price": price,
-            "Size (sf)": size,
-            "Floor Plan"  : fullImagePath,
-            "Description": deposit || ""
-        });    
+// Trim the whitespace from each part
+const street = addressParts[0].trim();
+const city = addressParts[1].trim();
+
+// Split the state and zip code (separated by space)
+const stateAndZip = addressParts[2].trim().split(' ');
+
+console.debug(stateAndZip)
+
+// The state will be the first part and zip code the second
+const state = stateAndZip[0].trim();
+const zip = stateAndZip[2].trim();
+
+console.log("Street:", street);
+console.log("City:", city);
+console.log("State:", state);
+console.log("Zip:", zip);
+
+// total number of floors:
+const total_number_of_floors_font = $('div.AptFontMargin font:contains("#Flrs:") font:nth-of-type(3)');
+const total_number_of_floors_element = $(total_number_of_floors_font[0]);
+const total_number_of_floors = total_number_of_floors_element[0]?.nextSibling?.nodeValue.trim();
+console.debug("Total Number of floors : ", total_number_of_floors)
+
+
+// total number of floors:
+const total_number_of_units_font = $('div.AptFontMargin font:contains("Units:") font:nth-of-type(2)');
+const total_number_of_units_element = $(total_number_of_units_font[0]);
+const total_number_of_units = total_number_of_units_element[0]?.nextSibling?.nodeValue.trim();
+console.debug("Total Number of units : ", total_number_of_units)
+
+
+// map-number
+const map_number_font = $('div.AptFontMargin font:contains("Map#:") font:nth-of-type(4)');
+const map_number_element = $(map_number_font[0]);
+const map_number = map_number_element[0]?.nextSibling?.nodeValue.trim();
+console.debug("Map Number : ", map_number)
+
+
+
+
+const cr_number_font = $('div.AptFontMargin font:contains("CR:") font:nth-of-type(5) font:first');
+const cr_number_element = $(cr_number_font[0]);
+const cr_number = cr_number_element[0]?.nextSibling?.nodeValue.trim();
+console.debug("CR Number : ", cr_number)
+
+
+
+let bedroomPlans = [];
+
+let floorPrice = [];
+let floorSizes = [];
+
+let seenBedrooms = new Set();
+const Plans_bedroom = []
+const Plans_bathroom = []
+// Select all <b> elements and filter by text containing "Bedroom" with a number
+const floor_plans_elements = $("a[name='EBROCHURE_FLOORPLANS'] div.AptFont2 b table.Apt2 tbody tr b:contains('Bedroom')").filter((index, element) => {
+    const text = $(element).text().trim();
+    
+    // console.debug(text)
+    
+    // Match text like "1 Bedroom", "2 Bedrooms", etc.
+    if (/\d+ Bedroom/.test(text)) {
+        // If the bedroom type has not been seen, add it to the set and allow it
+        if (!seenBedrooms.has(text)) {
+            seenBedrooms.add(text);
+            bedroomPlans.push(`${text} Plan`); // Add "Plan" to the bedroom type
+            // ;
+            
+            // 
+            // console.debug()
+            let requiredElements = $($(element)?.parent()?.parent()?.parent()?.[0])
+            const cr_number = $(requiredElements[0]?.nextSibling).find("td:nth-of-type(2)")?.text();
+            floorPrice.push(
+                cr_number
+                )
+
+                const cr_number_2 = $(requiredElements[0]?.nextSibling).find("td:nth-of-type(3)")?.text();
+                floorSizes.push(
+                    cr_number_2
+                )
+                Plans_bedroom.push(
+                    index+1
+                )
+                Plans_bathroom.push(
+                    index+1
+                )
+         
         }
-        
-    });
+    }
+
+    
+
+    return false;
 });
-        
+
+// console.debug(floor_plans_elements.length)
+const bedroomPlanString = bedroomPlans.join('|');
+const bedroomPriceString = floorPrice.join('|');
+const bedroomSizeString = floorSizes.join('|');
+const Plans_bedroomString = Plans_bedroom.join('|');
+const Plans_bathroomString = Plans_bathroom.join('|');
+console.log(bedroomPlanString, bedroomPriceString, bedroomSizeString, Plans_bedroomString, Plans_bathroomString);
+
+      
+console.debug("real_estate_property_price_short : ", floorPrice[0].split("-")[0])
+console.debug("real_estate_second-price : ", floorPrice[bedroomPlans?.length-1].split("-")[1])
+console.debug("real_estate_property_size : ", floorSizes[0].split("-")[0])
+console.debug("real_estate_second-size : ", floorSizes[bedroomPlans?.length-1].split("-")[1] || floorSizes[bedroomPlans?.length-1])
+console.debug("real_estate_property_bedrooms : ", Plans_bedroom[0])
+console.debug("real_estate_second-bedroom : ", Plans_bedroom[bedroomPlans?.length-1])
+console.debug("real_estate_property_bathrooms : ", Plans_bathroom[0])
+console.debug("real_estate_second-bathroom : ", Plans_bathroom[bedroomPlans?.length-1])
+
+    // Extract the content of the script that contains `ShowMap_EBrochure`
+    const scriptContent = await page.evaluate(() => {
+        const scripts = Array.from(document.querySelectorAll('script'));
+        let targetScript = '';
+
+        scripts.forEach(script => {
+            if (script.innerHTML.includes('ShowMap_EBrochure')) {
+                targetScript = script.innerHTML;
+            }
+        });
+
+        return targetScript;
+    });
+
+// Now, if the scriptContent has been found, proceed to extract parameters (from previous example)
+if (scriptContent) {
+    const url = scriptContent.match(/'([^']+)'/)[1]; // Extract the string inside the single quotes
+
+    const queryString = url.split('?')[1]; // Get the part after '?'
+    const params = new URLSearchParams(queryString);
+
+    const mode = params.get('MODE');
+    const mapWidth = params.get('MAP_WIDTH');
+    const mapHeight = params.get('MAP_HEIGHT');
+    const mapCenterLat = params.get('MAP_CENTER_LAT');
+    const mapCenterLng = params.get('MAP_CENTER_LNG');
+    const mapPointLat = params.get('MAP_POINT_LAT');
+    const mapPointLng = params.get('MAP_POINT_LNG');
+    const mapZoomLevel = params.get('MAP_ZOOMLEVEL');
+    const mapUsePointInfo = params.get('MAP_USEPOINTINFO');
+    const mapUseMapClick = params.get('MAP_USEMAPCLICK_LAT_LNG');
+    const mapUseAddress = params.get('MAP_USEADDRESS');
+
+    console.log("Mode:", mode);
+    console.log("Map Width:", mapWidth);
+    console.log("Map Height:", mapHeight);
+    console.log("Center Latitude:", mapCenterLat);
+    console.log("Center Longitude:", mapCenterLng);
+    console.log("Point Latitude:", mapPointLat);
+    console.log("Point Longitude:", mapPointLng);
+    console.log("Zoom Level:", mapZoomLevel);
+    console.log("Use Point Info:", mapUsePointInfo);
+    console.log("Use Map Click:", mapUseMapClick);
+    console.log("Use Address:", mapUseAddress);
+
+    writer.write({
+        "ID"	:apartmentID ,
+    "Title": apartments_title,	
+    "Province / State":state ,	
+    "City / Town": city,	
+    "real_estate_property_price_short": floorPrice[0].split("-")[0] ,	
+    "real_estate_second-price": floorPrice[bedroomPlans?.length-1].split("-")[1],	
+    "real_estate_property_size"	:  floorSizes[0].split("-")[0],
+    "real_estate_second-size": floorSizes[bedroomPlans?.length-1].split("-")[1] || floorSizes[bedroomPlans?.length-1],	
+    "real_estate_property_bedrooms": Plans_bedroom[0],	
+    "real_estate_second-bedroom": Plans_bedroom[bedroomPlans?.length-1],	
+    "real_estate_property_bathrooms":Plans_bathroom[0] ,	
+    "real_estate_second-bathroom": Plans_bathroom[bedroomPlans?.length-1],	
+    "real_estate_property_address": apartmentAddress_value,	
+    "real_estate_property_zip"	: zip,
+    "real_estate_property_location"	: `${mapPointLat},${mapPointLng}`,
+    "Floor Plans_floor_name"	: bedroomPlanString,
+    "Floor Plans_floor_price": bedroomPriceString,	
+    "Floor Plans_floor_size": bedroomSizeString,	
+    "Floor Plans_bedroom": Plans_bedroomString,	
+    "Floor Plans_bathroom" : Plans_bathroomString
+    });    
+}
 
         
 
     } catch (error) {
-        console.error('Error during scraping:', error);
+        console.error('Error during scraping:' , error);
     } finally {
-        // Close the browser
-        // await browser.close();
+        
     }
 }
 
@@ -297,9 +295,3 @@ async function main() {
 }
 
 main();
-
-// Run the scraping function
-// scrapeWebsiteWithCookies().then(() => {
-//     writer.end();  // End the CSV writer stream
-//     console.log('Scraping completed. Data saved to apartment_data.csv');
-// });
