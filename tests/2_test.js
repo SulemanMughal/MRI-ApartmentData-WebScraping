@@ -10,7 +10,7 @@ const {urls} = require("./urls")
 // Initialize the CSV writer
 // const writer = csvWriter({ headers: ["Property Name", "Address", "Type", "Price", "Size (sf)","Floor Plan", "Description"] });
 const writer = csvWriter({ headers: [
-    "ID"	,
+    "real_estate_property_identity"	,
     "Title",	
     "Province / State",	
     "City / Town",	
@@ -248,27 +248,71 @@ if (scriptContent) {
     console.log("Use Map Click:", mapUseMapClick);
     console.log("Use Address:", mapUseAddress);
 
+// console.debug(
+//     {
+//     "real_estate_property_identity"	:apartmentID ,
+//     "Title": apartments_title,	
+//     "Province / State":state ,	
+//     "City / Town": city,	
+//     "real_estate_property_price_short": floorPrice[0].split("-")[0] ,	
+//     "real_estate_second-price": floorPrice[bedroomPlans?.length-1].split("-")[1],	
+//     "real_estate_property_size"	:  floorSizes[0].split("-")[0],
+//     "real_estate_second-size": floorSizes[bedroomPlans?.length-1].split("-")[1] || floorSizes[bedroomPlans?.length-1],	
+//     "real_estate_property_bedrooms": Plans_bedroom[0],	
+//     "real_estate_second-bedroom": Plans_bedroom[bedroomPlans?.length-1],	
+//     "real_estate_property_bathrooms":Plans_bathroom[0] ,	
+//     "real_estate_second-bathroom": Plans_bathroom[bedroomPlans?.length-1],	
+//     "real_estate_property_address": apartmentAddress_value,	
+//     "real_estate_property_zip"	: zip,
+//     // "real_estate_property_location"	: `${mapPointLat},${mapPointLng}`,
+//     "real_estate_property_location"	: `a:2:{s:8:"location";s:29:"${mapPointLat},${mapPointLng}";s:7:"address";s:38:"${apartmentAddress_value}";}`,
+//     // "real_estate_property_location"	: `a:2:{s:8:"location";s:29:"40.7315899,-73.98948380000002";s:7:"address";s:38:"112 E 11th St, New York, NY 10003, USA";}`,
+//     "Floor Plans_floor_name"	: bedroomPlanString,
+//     "Floor Plans_floor_price":  floorPrice.map(price => {
+//         // Check if there's a hyphen before splitting
+//         const firstValue = price.includes('-') ? price.split('-')[0] : price;
+//         return firstValue.replace('$', '');  // Remove the $ sign
+//     }),	
+//     "Floor Plans_floor_size": floorSizes.map(price => {
+//         // Check if there's a hyphen before splitting
+//         const firstValue = price.includes('-') ? price.split('-')[0] : price;
+//         return firstValue.replace('$', '');  // Remove the $ sign
+//     }),	
+//     "Floor Plans_bedroom": Plans_bedroomString,	
+//     "Floor Plans_bathroom" : Plans_bathroomString
+// })
+
     writer.write({
-        "ID"	:apartmentID ,
-    "Title": apartments_title,	
-    "Province / State":state ,	
-    "City / Town": city,	
-    "real_estate_property_price_short": floorPrice[0].split("-")[0] ,	
-    "real_estate_second-price": floorPrice[bedroomPlans?.length-1].split("-")[1],	
-    "real_estate_property_size"	:  floorSizes[0].split("-")[0],
-    "real_estate_second-size": floorSizes[bedroomPlans?.length-1].split("-")[1] || floorSizes[bedroomPlans?.length-1],	
-    "real_estate_property_bedrooms": Plans_bedroom[0],	
-    "real_estate_second-bedroom": Plans_bedroom[bedroomPlans?.length-1],	
-    "real_estate_property_bathrooms":Plans_bathroom[0] ,	
-    "real_estate_second-bathroom": Plans_bathroom[bedroomPlans?.length-1],	
-    "real_estate_property_address": apartmentAddress_value,	
-    "real_estate_property_zip"	: zip,
-    "real_estate_property_location"	: `${mapPointLat},${mapPointLng}`,
-    "Floor Plans_floor_name"	: bedroomPlanString,
-    "Floor Plans_floor_price": bedroomPriceString,	
-    "Floor Plans_floor_size": bedroomSizeString,	
-    "Floor Plans_bedroom": Plans_bedroomString,	
-    "Floor Plans_bathroom" : Plans_bathroomString
+        "real_estate_property_identity"	:apartmentID ,
+        "Title": apartments_title,	
+        "Province / State":state ,	
+        "City / Town": city,	
+        "real_estate_property_price_short": floorPrice[0].split("-")[0] ,	
+        "real_estate_second-price": floorPrice[bedroomPlans?.length-1].split("-")[1],	
+        "real_estate_property_size"	:  floorSizes[0].split("-")[0],
+        "real_estate_second-size": floorSizes[bedroomPlans?.length-1].split("-")[1] || floorSizes[bedroomPlans?.length-1],	
+        "real_estate_property_bedrooms": Plans_bedroom[0],	
+        "real_estate_second-bedroom": Plans_bedroom[bedroomPlans?.length-1],	
+        "real_estate_property_bathrooms":Plans_bathroom[0] ,	
+        "real_estate_second-bathroom": Plans_bathroom[bedroomPlans?.length-1],	
+        "real_estate_property_address": apartmentAddress_value,	
+        "real_estate_property_zip"	: zip,
+        // "real_estate_property_location"	: `${mapPointLat},${mapPointLng}`,
+        "real_estate_property_location"	: `a:2:{s:8:"location";s:29:"${mapPointLat},${mapPointLng}";s:7:"address";s:38:"${apartmentAddress_value}";}`,
+        // "real_estate_property_location"	: `a:2:{s:8:"location";s:29:"40.7315899,-73.98948380000002";s:7:"address";s:38:"112 E 11th St, New York, NY 10003, USA";}`,
+        "Floor Plans_floor_name"	: bedroomPlanString,
+        "Floor Plans_floor_price":  floorPrice.map(price => {
+            // Check if there's a hyphen before splitting
+            const firstValue = price.includes('-') ? price.split('-')[0] : price;
+            return firstValue.replace('$', '');  // Remove the $ sign
+        }).join('|'),	
+        "Floor Plans_floor_size": floorSizes.map(price => {
+            // Check if there's a hyphen before splitting
+            const firstValue = price.includes('-') ? price.split('-')[0] : price;
+            return firstValue.replace('$', '');  // Remove the $ sign
+        }).join('|'),	
+        "Floor Plans_bedroom": Plans_bedroomString,	
+        "Floor Plans_bathroom" : Plans_bathroomString
     });    
 }
 
