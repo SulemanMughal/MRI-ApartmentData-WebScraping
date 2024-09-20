@@ -7,6 +7,26 @@ const url = require('url');
 const {urls} = require("./urls")
 
 
+// // Generate a timestamp
+// const timestamp = new Date().toISOString().replace(/[-:.]/g, '');
+
+// // Create a filename with the timestamp
+// const filename = `apartment_data_${timestamp}.csv`;
+
+
+// Generate a human-readable timestamp
+const now = new Date();
+const timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
+
+// Create a filename with the human-readable timestamp
+const filename = `apartment_data_${timestamp}.csv`;
+
+console.debug("Saved data into :",filename)
+
+// Use the dynamically generated filename
+// const writer = fs.createWriteStream(path.join(__dirname, filename));
+
+
 // Initialize the CSV writer
 // const writer = csvWriter({ headers: ["Property Name", "Address", "Type", "Price", "Size (sf)","Floor Plan", "Description"] });
 const writer = csvWriter({ headers: [
@@ -24,14 +44,16 @@ const writer = csvWriter({ headers: [
     "real_estate_second-bathroom",	
     "real_estate_property_address",	
     "real_estate_property_zip"	,
-    "real_estate_property_location"	,
+    // "real_estate_property_location"	,
     "Floor Plans_floor_name"	,
     "Floor Plans_floor_price",	
     "Floor Plans_floor_size",	
     "Floor Plans_bedroom",	
-    "Floor Plans_bathroom"
+    "Floor Plans_bathroom",
+    "Extra Address Field",
+    "Extra Latitude Field"
 ] });
-writer.pipe(fs.createWriteStream('apartment_data.csv'));
+writer.pipe(fs.createWriteStream(filename));
 
 async function scrapeWebsiteWithCookies(page, targetUrl) {
 
@@ -81,25 +103,25 @@ const apartments_title = $(title_apartments).text().trim();
     const apartmentAddress = $('div.AptFont2Margin font br:first');
 const apartmentAddress_elem =$(apartmentAddress[0]);
 // console.debug($(title_apartments).text().trim())
-const apartmentAddress_value = apartmentAddress_elem[0]?.nextSibling?.nodeValue.trim();
+const apartmentAddress_value = apartmentAddress_elem[0]?.nextSibling?.nodeValue?.trim();
 
     
     console.log("apartmentAddress_value:", apartmentAddress_value);
 // Split the address by commas first to separate street, city, and state/zip
-const addressParts = apartmentAddress_value.split(',');
+const addressParts = apartmentAddress_value?.split(',') || "";
 
 // Trim the whitespace from each part
-const street = addressParts[0].trim();
-const city = addressParts[1].trim();
+const street = addressParts[0]?.trim() || "";
+const city = addressParts[1]?.trim() || "";
 
 // Split the state and zip code (separated by space)
-const stateAndZip = addressParts[2].trim().split(' ');
+const stateAndZip = addressParts[2]?.trim()?.split(' ') || "";
 
 console.debug(stateAndZip)
 
 // The state will be the first part and zip code the second
-const state = stateAndZip[0].trim();
-const zip = stateAndZip[2].trim();
+const state = stateAndZip[0]?.trim();
+const zip = stateAndZip[2]?.trim();
 
 console.log("Street:", street);
 console.log("City:", city);
@@ -194,14 +216,14 @@ const Plans_bathroomString = Plans_bathroom.join('|');
 console.log(bedroomPlanString, bedroomPriceString, bedroomSizeString, Plans_bedroomString, Plans_bathroomString);
 
       
-console.debug("real_estate_property_price_short : ", floorPrice[0].split("-")[0])
-console.debug("real_estate_second-price : ", floorPrice[bedroomPlans?.length-1].split("-")[1])
-console.debug("real_estate_property_size : ", floorSizes[0].split("-")[0])
-console.debug("real_estate_second-size : ", floorSizes[bedroomPlans?.length-1].split("-")[1] || floorSizes[bedroomPlans?.length-1])
-console.debug("real_estate_property_bedrooms : ", Plans_bedroom[0])
-console.debug("real_estate_second-bedroom : ", Plans_bedroom[bedroomPlans?.length-1])
-console.debug("real_estate_property_bathrooms : ", Plans_bathroom[0])
-console.debug("real_estate_second-bathroom : ", Plans_bathroom[bedroomPlans?.length-1])
+// console.debug("real_estate_property_price_short : ", floorPrice[0].split("-")[0])
+// console.debug("real_estate_second-price : ", floorPrice[bedroomPlans?.length-1].split("-")[1])
+// console.debug("real_estate_property_size : ", floorSizes[0].split("-")[0])
+// console.debug("real_estate_second-size : ", floorSizes[bedroomPlans?.length-1].split("-")[1] || floorSizes[bedroomPlans?.length-1])
+// console.debug("real_estate_property_bedrooms : ", Plans_bedroom[0])
+// console.debug("real_estate_second-bedroom : ", Plans_bedroom[bedroomPlans?.length-1])
+// console.debug("real_estate_property_bathrooms : ", Plans_bathroom[0])
+// console.debug("real_estate_second-bathroom : ", Plans_bathroom[bedroomPlans?.length-1])
 
     // Extract the content of the script that contains `ShowMap_EBrochure`
     const scriptContent = await page.evaluate(() => {
@@ -287,10 +309,10 @@ if (scriptContent) {
         "Title": apartments_title,	
         "Province / State":state ,	
         "City / Town": city,	
-        "real_estate_property_price_short": floorPrice[0].split("-")[0] ,	
-        "real_estate_second-price": floorPrice[bedroomPlans?.length-1].split("-")[1],	
-        "real_estate_property_size"	:  floorSizes[0].split("-")[0],
-        "real_estate_second-size": floorSizes[bedroomPlans?.length-1].split("-")[1] || floorSizes[bedroomPlans?.length-1],	
+        "real_estate_property_price_short": floorPrice[0]?.split("-")?.[0]?.replace(/[$,]/g, '')  ,	
+        "real_estate_second-price": floorPrice[bedroomPlans?.length-1].split("-")[1]?.replace(/[$,]/g, '') || floorPrice[bedroomPlans?.length-1]?.replace(/[$,]/g, ''),	
+        "real_estate_property_size"	:  floorSizes[0].split("-")[0]?.replace(/[$,]/g, ''),
+        "real_estate_second-size": floorSizes[bedroomPlans?.length-1].split("-")[1]?.replace(/[$,]/g, '') || floorSizes[bedroomPlans?.length-1]?.replace(/[$,]/g, ''),	
         "real_estate_property_bedrooms": Plans_bedroom[0],	
         "real_estate_second-bedroom": Plans_bedroom[bedroomPlans?.length-1],	
         "real_estate_property_bathrooms":Plans_bathroom[0] ,	
@@ -298,21 +320,23 @@ if (scriptContent) {
         "real_estate_property_address": apartmentAddress_value,	
         "real_estate_property_zip"	: zip,
         // "real_estate_property_location"	: `${mapPointLat},${mapPointLng}`,
-        "real_estate_property_location"	: `a:2:{s:8:"location";s:29:"${mapPointLat},${mapPointLng}";s:7:"address";s:38:"${apartmentAddress_value}";}`,
+        // "real_estate_property_location"	: `a:2:{s:8:"location";s:29:"${mapPointLat},${mapPointLng}";s:7:"address";s:38:"${apartmentAddress_value}";}`,
         // "real_estate_property_location"	: `a:2:{s:8:"location";s:29:"40.7315899,-73.98948380000002";s:7:"address";s:38:"112 E 11th St, New York, NY 10003, USA";}`,
         "Floor Plans_floor_name"	: bedroomPlanString,
         "Floor Plans_floor_price":  floorPrice.map(price => {
             // Check if there's a hyphen before splitting
             const firstValue = price.includes('-') ? price.split('-')[0] : price;
-            return firstValue.replace('$', '');  // Remove the $ sign
+            return firstValue.replace(/[$,]/g, '');  // Remove the $ sign
         }).join('|'),	
         "Floor Plans_floor_size": floorSizes.map(price => {
             // Check if there's a hyphen before splitting
             const firstValue = price.includes('-') ? price.split('-')[0] : price;
-            return firstValue.replace('$', '');  // Remove the $ sign
+            return firstValue.replace(/[$,]/g, '');  // Remove the $ sign
         }).join('|'),	
         "Floor Plans_bedroom": Plans_bedroomString,	
-        "Floor Plans_bathroom" : Plans_bathroomString
+        "Floor Plans_bathroom" : Plans_bathroomString,
+        "Extra Address Field" : apartmentAddress_value,
+        "Extra Latitude Field" : `${mapPointLat},${mapPointLng}`
     });    
 }
 
