@@ -16,7 +16,7 @@ def get_response(target_url):
 
     # Initialize Chrome driver (ChromeDriver must be in your system's PATH)
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")  # Optional: Uncomment for headless mode
+    chrome_options.add_argument("--headless")  # Optional: Uncomment for headless mode
 
     driver = webdriver.Chrome(options=chrome_options)
 
@@ -42,9 +42,10 @@ def get_response(target_url):
     try:
         accept_cookies_button = driver.find_element(By.ID, "onetrust-accept-btn-handler")
         accept_cookies_button.click()
-        print("Accepted all cookies.")
+        # print("Accepted all cookies.")
     except Exception as e:
-        print(f"Accept Cookies button not found: {e}")
+        # print(f"Accept Cookies button not found: {e}")
+        pass
 
     # # Now click on the "Login" link by href
     # login_button = driver.find_element(By.XPATH, "//a[@href='https://us.apartmentdata.com/login']")
@@ -71,7 +72,7 @@ def get_response(target_url):
     # login_button.click()
 
     # Print confirmation
-    print("Login page opened successfully!")
+    # print("Login page opened successfully!")
 
     # Close the browser
     time.sleep(5)  # Adjust based on the actions being performed
@@ -84,9 +85,10 @@ def get_response(target_url):
     try:
         email_field = driver.find_element(By.ID, "MS_LogIn_User")
         email_field.send_keys("alex@apartmentwolf.com")  # Replace with your email or test data
-        print("Email entered successfully!")
+        # print("Email entered successfully!")
     except Exception as e:
-        print(f"Error locating the email field: {e}")
+        # print(f"Error locating the email field: {e}")
+        pass
 
 
 
@@ -94,9 +96,10 @@ def get_response(target_url):
     try:
         password_field = driver.find_element(By.ID, "MS_LogIn_Password")
         password_field.send_keys("386349")  # Replace with the actual password
-        print("Password entered successfully!")
+        # print("Password entered successfully!")
     except Exception as e:
-        print(f"Error locating the password field: {e}")
+        # print(f"Error locating the password field: {e}")
+        pass
 
     time.sleep(3)
 
@@ -104,9 +107,10 @@ def get_response(target_url):
     try:
         login_button = driver.find_element(By.XPATH, "//button[@name='task' and @value='login.login']")
         login_button.click()
-        print("Login button clicked successfully!")
+        # print("Login button clicked successfully!")
     except Exception as e:
-        print(f"Error clicking the login button: {e}")
+        # print(f"Error clicking the login button: {e}")
+        pass
 
 
     time.sleep(5)
@@ -117,12 +121,13 @@ def get_response(target_url):
             By.XPATH, "/html/body/table/tbody/tr[2]/td/font/form/table/tbody/tr/td[2]/table[3]/tbody/tr[3]/td[2]/table[2]/tbody/tr[1]/td[1]/div/a"
         )
         full_search_btn.click()
-        print("Full search button click")
+        # print("Full search button click")
 
         time.sleep(5)
 
     except Exception as e:
-        print(f"Error clicking the Full search button: {e}")
+        # print(f"Error clicking the Full search button: {e}")
+        pass
 
 
     # Retrieve cookies from the browser

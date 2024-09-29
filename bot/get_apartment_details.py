@@ -246,14 +246,15 @@ def get_details(apartmentId, cookies, headers,csv_filepath ):
                         apartment_address_value,
                         f"{map_point_lat},{map_point_lng}"
                     ]
-                    print(data)
+                    # print(data)
                     writer.writerow(data)
             # else:
             #     print("URL not found in script content.")
         # else:
         #     print("Script content with ShowMap_EBrochure not found.")
-
+        print(str(apartmentId) + " : Done")
     except:
+        print(str(apartmentId) + " : Error")
         traceback.print_exc()
         # logging.error(f"Exception occurred for apartment ID: {apartmentId}", exc_info=True)
 

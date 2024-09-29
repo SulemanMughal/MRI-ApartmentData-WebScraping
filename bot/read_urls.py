@@ -8,7 +8,10 @@ from datetime import datetime
 
 import get_apartment_details
 import get_apartment_list
+import concurrent.futures
+import threading
 
+# Lock to print sa
 
 # Convert Selenium cookies to a dictionary that requests can use
 def selenium_cookies_to_requests(cookies):
@@ -63,28 +66,47 @@ df = pd.read_csv(csv_file_path)
 
 
 
-with open(output_file_path, mode='w', newline='', encoding='utf-8') as file:
-    writer = csv.DictWriter(file, fieldnames=csv_headers)
-    writer.writeheader()  
+# with open(output_file_path, mode='w', newline='', encoding='utf-8') as file:
+#     writer = csv.DictWriter(file, fieldnames=csv_headers)
+#     writer.writeheader()  
 
 
 
 
 
-# Iterate through the URLs one by one
-for index, row in df.iterrows():
-    url = row['URL']
-    print(f"Processing URL {index + 1}: {url}")
+# # Iterate through the URLs one by one
+# for index, row in df.iterrows():
+#     url = row['URL']
+#     print(f"Processing URL {index + 1}: {url}")
 
     
-    # Here, you can perform actions on the URL like opening it with Selenium, etc.
-    # For example:
-    # driver.get(url)
+#     # Here, you can perform actions on the URL like opening it with Selenium, etc.
+#     # For example:
+#     # driver.get(url)
 
-    (cookies, params, headers) = open_browser.get_response(url)
-    # print((cookies, params, headers))
+#     (cookies, params, headers) = open_browser.get_response(url)
+#     # print((cookies, params, headers))
+#     cookies = selenium_cookies_to_requests(cookies)
+#     # print(cookies)
+#     get_apartment_list.get_aparment_list(
+#         TARGET_URL,
+#         params, 
+#         cookies, 
+#         headers,
+#         output_file_path
+#     )
+
+print_lock = threading.Lock()
+
+def process_url(index, url, output_file_path):
+    with print_lock:
+        print(f"Processing URL {index + 1}: {url}")
+
+    # Perform your browser actions here
+    cookies, params, headers = open_browser.get_response(url)
     cookies = selenium_cookies_to_requests(cookies)
-    # print(cookies)
+    
+    # Process the apartment list with your function
     get_apartment_list.get_aparment_list(
         TARGET_URL,
         params, 
@@ -92,3 +114,24 @@ for index, row in df.iterrows():
         headers,
         output_file_path
     )
+
+def run_multithreaded(df, output_file_path, max_threads=30):
+    # Create a thread pool to handle URLs concurrently
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_threads) as executor:
+        # Iterate through the URLs and submit each task to the thread pool
+        futures = [
+            executor.submit(process_url, index, row['URL'], output_file_path)
+            for index, row in df.iterrows()
+        ]
+
+        # Optional: wait for each thread to complete
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                future.result()  # If any exceptions occur, they will be raised here
+            except Exception as e:
+                print(f"An error occurred: {e}")
+
+
+
+# Example usage
+run_multithreaded(df, output_file_path)
