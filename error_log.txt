@@ -1,0 +1,70 @@
+ERROR:root:Exception occurred for product ID: None
+Traceback (most recent call last):
+  File "/home/unicorn/Documents/FalconXsoft/apartments/MRI-ApartmentData-WebScraping/get_apartment_details.py", line 98, in get_details
+    apartment_address_value = apartment_address_elem.next_sibling.strip()  # Strip to remove extra whitespace
+TypeError: 'NoneType' object is not callable
+ERROR:root:Exception occurred
+Traceback (most recent call last):
+  File "/home/unicorn/Documents/FalconXsoft/apartments/MRI-ApartmentData-WebScraping/get_apartment_details.py", line 98, in get_details
+    apartment_address_value = apartment_address_elem.next_sibling.strip()  # Strip to remove extra whitespace
+TypeError: 'NoneType' object is not callable
+ERROR:root:Exception occurred for product ID: None
+Traceback (most recent call last):
+  File "/home/unicorn/Documents/FalconXsoft/apartments/MRI-ApartmentData-WebScraping/get_apartment_details.py", line 98, in get_details
+    apartment_address_value = apartment_address_elem.next_sibling.strip()  # Strip to remove extra whitespace
+TypeError: 'NoneType' object is not callable
+ERROR:root:Exception occurred
+Traceback (most recent call last):
+  File "/home/unicorn/Documents/FalconXsoft/apartments/MRI-ApartmentData-WebScraping/get_apartment_details.py", line 98, in get_details
+    apartment_address_value = apartment_address_elem.next_sibling.strip()  # Strip to remove extra whitespace
+TypeError: 'NoneType' object is not callable
+ERROR:root:Exception occurred for product ID: None
+Traceback (most recent call last):
+  File "/home/unicorn/Documents/FalconXsoft/apartments/MRI-ApartmentData-WebScraping/get_apartment_details.py", line 98, in get_details
+    apartment_address_value = apartment_address_elem.next_sibling.strip()  # Strip to remove extra whitespace
+TypeError: 'NoneType' object is not callable
+ERROR:root:Exception occurred
+Traceback (most recent call last):
+  File "/home/unicorn/Documents/FalconXsoft/apartments/MRI-ApartmentData-WebScraping/get_apartment_details.py", line 98, in get_details
+    apartment_address_value = apartment_address_elem.next_sibling.strip()  # Strip to remove extra whitespace
+TypeError: 'NoneType' object is not callable
+ERROR:root:Exception occurred for product ID: None
+Traceback (most recent call last):
+  File "/home/unicorn/Documents/FalconXsoft/apartments/MRI-ApartmentData-WebScraping/get_apartment_details.py", line 98, in get_details
+    apartment_address_value = apartment_address_elem.next_sibling.strip()  # Strip to remove extra whitespace
+TypeError: 'NoneType' object is not callable
+ERROR:root:Exception occurred
+Traceback (most recent call last):
+  File "/home/unicorn/Documents/FalconXsoft/apartments/MRI-ApartmentData-WebScraping/get_apartment_details.py", line 98, in get_details
+    apartment_address_value = apartment_address_elem.next_sibling.strip()  # Strip to remove extra whitespace
+TypeError: 'NoneType' object is not callable
+ERROR:root:Exception occurred for product ID: None
+Traceback (most recent call last):
+  File "/home/unicorn/Documents/FalconXsoft/apartments/MRI-ApartmentData-WebScraping/get_apartment_details.py", line 98, in get_details
+    apartment_address_value = apartment_address_elem.next_sibling.strip()  # Strip to remove extra whitespace
+TypeError: 'NoneType' object is not callable
+ERROR:root:Exception occurred
+Traceback (most recent call last):
+  File "/home/unicorn/Documents/FalconXsoft/apartments/MRI-ApartmentData-WebScraping/get_apartment_details.py", line 98, in get_details
+    apartment_address_value = apartment_address_elem.next_sibling.strip()  # Strip to remove extra whitespace
+TypeError: 'NoneType' object is not callable
+ERROR:root:Exception occurred for product ID: None
+Traceback (most recent call last):
+  File "/home/unicorn/Documents/FalconXsoft/apartments/MRI-ApartmentData-WebScraping/get_apartment_details.py", line 98, in get_details
+    apartment_address_value = apartment_address_elem.next_sibling.strip()  # Strip to remove extra whitespace
+TypeError: 'NoneType' object is not callable
+ERROR:root:Exception occurred
+Traceback (most recent call last):
+  File "/home/unicorn/Documents/FalconXsoft/apartments/MRI-ApartmentData-WebScraping/get_apartment_details.py", line 98, in get_details
+    apartment_address_value = apartment_address_elem.next_sibling.strip()  # Strip to remove extra whitespace
+TypeError: 'NoneType' object is not callable
+ERROR:root:Exception occurred for apartment ID: 3256C
+Traceback (most recent call last):
+  File "/home/unicorn/Documents/FalconXsoft/apartments/MRI-ApartmentData-WebScraping/get_apartment_details.py", line 98, in get_details
+    apartment_address_value = apartment_address_elem.next_sibling.strip()  # Strip to remove extra whitespace
+TypeError: 'NoneType' object is not callable
+ERROR:root:Exception occurred
+Traceback (most recent call last):
+  File "/home/unicorn/Documents/FalconXsoft/apartments/MRI-ApartmentData-WebScraping/get_apartment_details.py", line 98, in get_details
+    apartment_address_value = apartment_address_elem.next_sibling.strip()  # Strip to remove extra whitespace
+TypeError: 'NoneType' object is not callable
