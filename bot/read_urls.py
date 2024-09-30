@@ -13,6 +13,9 @@ import threading
 
 # Lock to print sa
 
+index = 0
+file_name = 'urls.txt'
+
 # Convert Selenium cookies to a dictionary that requests can use
 def selenium_cookies_to_requests(cookies):
     cookie_dict = {}
@@ -101,6 +104,8 @@ print_lock = threading.Lock()
 def process_url(index, url, output_file_path):
     with print_lock:
         print(f"Processing URL {index + 1}: {url}")
+        with open(file_name, 'a') as file:  # 'a' mode for appending to the file
+            file.write(f"{index + 1}: {url}\n")
 
     # Perform your browser actions here
     cookies, params, headers = open_browser.get_response(url)
@@ -115,7 +120,7 @@ def process_url(index, url, output_file_path):
         output_file_path
     )
 
-def run_multithreaded(df, output_file_path, max_threads=50):
+def run_multithreaded(df, output_file_path, max_threads=3):
     # Create a thread pool to handle URLs concurrently
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_threads) as executor:
         # Iterate through the URLs and submit each task to the thread pool
