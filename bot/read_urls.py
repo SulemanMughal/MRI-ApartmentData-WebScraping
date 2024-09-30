@@ -115,7 +115,7 @@ def process_url(index, url, output_file_path):
         output_file_path
     )
 
-def run_multithreaded(df, output_file_path, max_threads=30):
+def run_multithreaded(df, output_file_path, max_threads=50):
     # Create a thread pool to handle URLs concurrently
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_threads) as executor:
         # Iterate through the URLs and submit each task to the thread pool
