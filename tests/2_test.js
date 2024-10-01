@@ -9,6 +9,8 @@ const url = require('url');
 const fs = require('fs');
 const csv = require('csv-parser');
 
+
+
 // // Generate a timestamp
 // const timestamp = new Date().toISOString().replace(/[-:.]/g, '');
 
@@ -66,7 +68,7 @@ async function scrapeWebsiteWithCookies(page, targetUrl) {
         await page.setCookie(...cookies);
 
         // Navigate to the protected page
-        await page.goto(targetUrl, { waitUntil: 'networkidle2' });
+        await page.goto(targetUrl, { waitUntil: 'networkidle2',timeout: 0 });
 
         // Get the page content and load it into Cheerio
         const content = await page.content();
@@ -375,9 +377,15 @@ async function main() {
             // Create a new page for each row
             scrapePromises.push(
                 (async () => {
-                    const page = await browser.newPage();
-                    await scrapeWebsiteWithCookies(page, targetUrl);
-                    await page.close();
+                    try{
+                        const page = await browser.newPage();
+                        // Increase timeout to 60 seconds
+                        page.setDefaultNavigationTimeout(60000); // 60 seconds
+                        await scrapeWebsiteWithCookies(page, targetUrl);
+                        await page.close();
+                    } catch(error){
+                        console.error(error)
+                    }
                 })()
             );
         })
