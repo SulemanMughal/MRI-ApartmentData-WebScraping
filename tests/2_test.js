@@ -1,11 +1,13 @@
 const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
-const fs = require('fs');
+// const fs = require('fs');
 const path = require('path');
 const csvWriter = require('csv-write-stream');
 const url = require('url');
-const {urls} = require("./urls")
+// const {urls} = require("./urls")
 
+const fs = require('fs');
+const csv = require('csv-parser');
 
 // // Generate a timestamp
 // const timestamp = new Date().toISOString().replace(/[-:.]/g, '');
@@ -349,17 +351,49 @@ if (scriptContent) {
     }
 }
 
+
+
+// Main async function to process CSV and run Puppeteer
 async function main() {
+    const csvFilePath = 'apartment_links.csv'; 
     const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
 
-    for (const targetUrl of urls) {
-        await scrapeWebsiteWithCookies(page, targetUrl);
-    }
+    // Create an array to hold all the promises for the scraping tasks
+    const scrapePromises = [];
 
-    await browser.close();
-    writer.end();
-    console.log('Scraping completed. Data saved to apartment_data.csv');
+    // Process the CSV data
+    fs.createReadStream(csvFilePath)
+        .pipe(csv())
+        .on('data', (row) => {
+            const targetUrl = `https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=${row.id}&MODE2=StartFromTop_Directory&VIP=010`;
+
+            console.debug(targetUrl)
+            
+
+            // Create a new page for each row
+            scrapePromises.push(
+                (async () => {
+                    const page = await browser.newPage();
+                    await scrapeWebsiteWithCookies(page, targetUrl);
+                    await page.close();
+                })()
+            );
+        })
+        .on('end', async () => {
+            // Wait for all scraping promises to resolve
+            await Promise.all(scrapePromises);
+
+            // Close the browser
+            await browser.close();
+
+            console.log('CSV file successfully processed');
+            console.log('Scraping completed.');
+        });
 }
 
-main();
+
+// main();
+// Call the main function
+main().catch((error) => {
+    console.error('Error in main execution:', error);
+});
