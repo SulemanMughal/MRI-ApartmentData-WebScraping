@@ -15,6 +15,7 @@ import threading
 
 index = 0
 file_name = 'urls.txt'
+apartment_links
 
 # Convert Selenium cookies to a dictionary that requests can use
 def selenium_cookies_to_requests(cookies):
