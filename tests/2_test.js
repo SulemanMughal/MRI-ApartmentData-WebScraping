@@ -356,7 +356,9 @@ if (scriptContent) {
 // Main async function to process CSV and run Puppeteer
 async function main() {
     const csvFilePath = 'apartment_links.csv'; 
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({ headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+     });
 
     // Create an array to hold all the promises for the scraping tasks
     const scrapePromises = [];
