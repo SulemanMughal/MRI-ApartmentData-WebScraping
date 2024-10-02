@@ -48,7 +48,8 @@ async function processRowWithPuppeteer(row) {
         // Start Puppeteer and scrape the data
         const browser = await puppeteer.launch({ headless: true,
             defaultViewport: null,
-        ignoreHTTPSErrors: true
+        ignoreHTTPSErrors: true,
+        args: ['--no-sandbox']
          }); // Launch the browser
         const page = await browser.newPage(); // Open a new page
 
