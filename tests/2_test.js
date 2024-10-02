@@ -3,13 +3,14 @@ const cheerio = require('cheerio');
 // const fs = require('fs');
 const path = require('path');
 const csvWriter = require('csv-write-stream');
-const url = require('url');
-// const {urls} = require("./urls")
-
 const fs = require('fs');
 const csv = require('csv-parser');
 
+var promiseLimit = require('promise-limit')
+var limit = promiseLimit(2)
 
+const DIRECTORY_PATH = './input_csv';  // Directory containing CSV files
+const BATCH_SIZE = 10;
 
 // // Generate a timestamp
 // const timestamp = new Date().toISOString().replace(/[-:.]/g, '');
@@ -62,6 +63,10 @@ writer.pipe(fs.createWriteStream(filename));
 async function scrapeWebsiteWithCookies(page, targetUrl) {
 
     try {
+        
+        // Wait until the main frame is available before setting cookies
+        await page.waitForSelector('html', { timeout: 10000 });  // Wait for the main document to load
+
         // Load the cookies from the file
         const cookiesString = fs.readFileSync('cookies.json', 'utf8');
         const cookies = JSON.parse(cookiesString);
@@ -86,12 +91,19 @@ async function scrapeWebsiteWithCookies(page, targetUrl) {
 
 
         const $ = cheerio.load(content);
+        const isErrorBoucher = $('b:contains("Error-Unable to load eBrochure")')
+        // console.debug(isErrorBoucher?.nodeValue?.trim())
+
+        if(isErrorBoucher?.nodeValue?.trim() != undefined){
+            console.debug(targetUrl, " : ", "error boucher")
+            return 
+        }
         const fontWithID = $('div.AptFontMargin font:contains("ID:") font:first');
 const id_apartments = $(fontWithID[0]);
 const apartmentID = id_apartments[0]?.nextSibling?.nodeValue.trim();
 
     
-    console.log("Apartment ID:", apartmentID);
+    // console.log("Apartment ID:", apartmentID);
 
     const apartmentTitle = $('div.AptFont2Margin font font:first');
 const title_apartments =$(apartmentTitle[0]);
@@ -99,7 +111,7 @@ const title_apartments =$(apartmentTitle[0]);
 const apartments_title = $(title_apartments).text().trim();
 
     
-    console.log("Apartment Title:", apartments_title);
+    // console.log("Apartment Title:", apartments_title);
 
 
     // apartment-address
@@ -110,7 +122,7 @@ const apartmentAddress_elem =$(apartmentAddress[0]);
 const apartmentAddress_value = apartmentAddress_elem[0]?.nextSibling?.nodeValue?.trim();
 
     
-    console.log("apartmentAddress_value:", apartmentAddress_value);
+    // console.log("apartmentAddress_value:", apartmentAddress_value);
 // Split the address by commas first to separate street, city, and state/zip
 const addressParts = apartmentAddress_value?.split(',') || "";
 
@@ -121,36 +133,36 @@ const city = addressParts[1]?.trim() || "";
 // Split the state and zip code (separated by space)
 const stateAndZip = addressParts[2]?.trim()?.split(' ') || "";
 
-console.debug(stateAndZip)
+// console.debug(stateAndZip)
 
 // The state will be the first part and zip code the second
 const state = stateAndZip[0]?.trim();
 const zip = stateAndZip[2]?.trim();
 
-console.log("Street:", street);
-console.log("City:", city);
-console.log("State:", state);
-console.log("Zip:", zip);
+// console.log("Street:", street);
+// console.log("City:", city);
+// console.log("State:", state);
+// console.log("Zip:", zip);
 
 // total number of floors:
 const total_number_of_floors_font = $('div.AptFontMargin font:contains("#Flrs:") font:nth-of-type(3)');
 const total_number_of_floors_element = $(total_number_of_floors_font[0]);
 const total_number_of_floors = total_number_of_floors_element[0]?.nextSibling?.nodeValue.trim();
-console.debug("Total Number of floors : ", total_number_of_floors)
+// console.debug("Total Number of floors : ", total_number_of_floors)
 
 
 // total number of floors:
 const total_number_of_units_font = $('div.AptFontMargin font:contains("Units:") font:nth-of-type(2)');
 const total_number_of_units_element = $(total_number_of_units_font[0]);
 const total_number_of_units = total_number_of_units_element[0]?.nextSibling?.nodeValue.trim();
-console.debug("Total Number of units : ", total_number_of_units)
+// console.debug("Total Number of units : ", total_number_of_units)
 
 
 // map-number
 const map_number_font = $('div.AptFontMargin font:contains("Map#:") font:nth-of-type(4)');
 const map_number_element = $(map_number_font[0]);
 const map_number = map_number_element[0]?.nextSibling?.nodeValue.trim();
-console.debug("Map Number : ", map_number)
+// console.debug("Map Number : ", map_number)
 
 
 
@@ -158,7 +170,7 @@ console.debug("Map Number : ", map_number)
 const cr_number_font = $('div.AptFontMargin font:contains("CR:") font:nth-of-type(5) font:first');
 const cr_number_element = $(cr_number_font[0]);
 const cr_number = cr_number_element[0]?.nextSibling?.nodeValue.trim();
-console.debug("CR Number : ", cr_number)
+// console.debug("CR Number : ", cr_number)
 
 
 
@@ -217,7 +229,7 @@ const bedroomPriceString = floorPrice.join('|');
 const bedroomSizeString = floorSizes.join('|');
 const Plans_bedroomString = Plans_bedroom.join('|');
 const Plans_bathroomString = Plans_bathroom.join('|');
-console.log(bedroomPlanString, bedroomPriceString, bedroomSizeString, Plans_bedroomString, Plans_bathroomString);
+// console.log(bedroomPlanString, bedroomPriceString, bedroomSizeString, Plans_bedroomString, Plans_bathroomString);
 
       
 // console.debug("real_estate_property_price_short : ", floorPrice[0].split("-")[0])
@@ -262,17 +274,17 @@ if (scriptContent) {
     const mapUseMapClick = params.get('MAP_USEMAPCLICK_LAT_LNG');
     const mapUseAddress = params.get('MAP_USEADDRESS');
 
-    console.log("Mode:", mode);
-    console.log("Map Width:", mapWidth);
-    console.log("Map Height:", mapHeight);
-    console.log("Center Latitude:", mapCenterLat);
-    console.log("Center Longitude:", mapCenterLng);
-    console.log("Point Latitude:", mapPointLat);
-    console.log("Point Longitude:", mapPointLng);
-    console.log("Zoom Level:", mapZoomLevel);
-    console.log("Use Point Info:", mapUsePointInfo);
-    console.log("Use Map Click:", mapUseMapClick);
-    console.log("Use Address:", mapUseAddress);
+    // console.log("Mode:", mode);
+    // console.log("Map Width:", mapWidth);
+    // console.log("Map Height:", mapHeight);
+    // console.log("Center Latitude:", mapCenterLat);
+    // console.log("Center Longitude:", mapCenterLng);
+    // console.log("Point Latitude:", mapPointLat);
+    // console.log("Point Longitude:", mapPointLng);
+    // console.log("Zoom Level:", mapZoomLevel);
+    // console.log("Use Point Info:", mapUsePointInfo);
+    // console.log("Use Map Click:", mapUseMapClick);
+    // console.log("Use Address:", mapUseAddress);
 
 // console.debug(
 //     {
@@ -307,16 +319,49 @@ if (scriptContent) {
 //     "Floor Plans_bedroom": Plans_bedroomString,	
 //     "Floor Plans_bathroom" : Plans_bathroomString
 // })
-
+    console.table({
+        "real_estate_property_identity"	:apartmentID ,
+        "Title": apartments_title,	
+        "Province / State":state ,	
+        "City / Town": city,	
+        "real_estate_property_price_short": floorPrice?.[0]?.split("-")?.[0]?.replace(/[$,]/g, '')  ,	
+        "real_estate_second-price": floorPrice?.[bedroomPlans?.length-1]?.split("-")[1]?.replace(/[$,]/g, '') || floorPrice[bedroomPlans?.length-1]?.replace(/[$,]/g, ''),	
+        "real_estate_property_size"	:  floorSizes?.[0]?.split("-")[0]?.replace(/[$,]/g, ''),
+        "real_estate_second-size": floorSizes?.[bedroomPlans?.length-1]?.split("-")[1]?.replace(/[$,]/g, '') || floorSizes[bedroomPlans?.length-1]?.replace(/[$,]/g, ''),	
+        "real_estate_property_bedrooms": Plans_bedroom[0],	
+        "real_estate_second-bedroom": Plans_bedroom[bedroomPlans?.length-1],	
+        "real_estate_property_bathrooms":Plans_bathroom[0] ,	
+        "real_estate_second-bathroom": Plans_bathroom[bedroomPlans?.length-1],	
+        "real_estate_property_address": apartmentAddress_value,	
+        "real_estate_property_zip"	: zip,
+        // "real_estate_property_location"	: `${mapPointLat},${mapPointLng}`,
+        // "real_estate_property_location"	: `a:2:{s:8:"location";s:29:"${mapPointLat},${mapPointLng}";s:7:"address";s:38:"${apartmentAddress_value}";}`,
+        // "real_estate_property_location"	: `a:2:{s:8:"location";s:29:"40.7315899,-73.98948380000002";s:7:"address";s:38:"112 E 11th St, New York, NY 10003, USA";}`,
+        "Floor Plans_floor_name"	: bedroomPlanString,
+        "Floor Plans_floor_price":  floorPrice.map(price => {
+            // Check if there's a hyphen before splitting
+            const firstValue = price.includes('-') ? price.split('-')[0] : price;
+            return firstValue.replace(/[$,]/g, '');  // Remove the $ sign
+        }).join('|'),	
+        "Floor Plans_floor_size": floorSizes.map(price => {
+            // Check if there's a hyphen before splitting
+            const firstValue = price.includes('-') ? price.split('-')[0] : price;
+            return firstValue.replace(/[$,]/g, '');  // Remove the $ sign
+        }).join('|'),	
+        "Floor Plans_bedroom": Plans_bedroomString,	
+        "Floor Plans_bathroom" : Plans_bathroomString,
+        "Extra Address Field" : apartmentAddress_value,
+        "Extra Latitude Field" : `${mapPointLat},${mapPointLng}`
+    })
     writer.write({
         "real_estate_property_identity"	:apartmentID ,
         "Title": apartments_title,	
         "Province / State":state ,	
         "City / Town": city,	
-        "real_estate_property_price_short": floorPrice[0]?.split("-")?.[0]?.replace(/[$,]/g, '')  ,	
-        "real_estate_second-price": floorPrice[bedroomPlans?.length-1].split("-")[1]?.replace(/[$,]/g, '') || floorPrice[bedroomPlans?.length-1]?.replace(/[$,]/g, ''),	
-        "real_estate_property_size"	:  floorSizes[0].split("-")[0]?.replace(/[$,]/g, ''),
-        "real_estate_second-size": floorSizes[bedroomPlans?.length-1].split("-")[1]?.replace(/[$,]/g, '') || floorSizes[bedroomPlans?.length-1]?.replace(/[$,]/g, ''),	
+        "real_estate_property_price_short": floorPrice?.[0]?.split("-")?.[0]?.replace(/[$,]/g, '')  ,	
+        "real_estate_second-price": floorPrice?.[bedroomPlans?.length-1]?.split("-")[1]?.replace(/[$,]/g, '') || floorPrice[bedroomPlans?.length-1]?.replace(/[$,]/g, ''),	
+        "real_estate_property_size"	:  floorSizes?.[0]?.split("-")[0]?.replace(/[$,]/g, ''),
+        "real_estate_second-size": floorSizes?.[bedroomPlans?.length-1]?.split("-")[1]?.replace(/[$,]/g, '') || floorSizes[bedroomPlans?.length-1]?.replace(/[$,]/g, ''),	
         "real_estate_property_bedrooms": Plans_bedroom[0],	
         "real_estate_second-bedroom": Plans_bedroom[bedroomPlans?.length-1],	
         "real_estate_property_bathrooms":Plans_bathroom[0] ,	
@@ -349,61 +394,100 @@ if (scriptContent) {
     } catch (error) {
         console.error('Error during scraping:' , error);
     } finally {
-        
+        // Ensure that the page is always closed to avoid memory leaks
+        if (page && !page.isClosed()) {
+            await page.close();
+        }
     }
 }
 
 
+// Process a batch of rows
+async function processBatch(browser, batch) {
+    const scrapePromises = batch.map(async (row) => {
+        // console.debug(row)
+        const targetUrl = `https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=${row.id}&MODE2=StartFromTop_Directory&VIP=010`;
 
-// Main async function to process CSV and run Puppeteer
-async function main() {
-    const csvFilePath = 'apartment_links.csv'; 
-    const browser = await puppeteer.launch({ headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-     });
+        console.debug(targetUrl)
 
-    // Create an array to hold all the promises for the scraping tasks
-    const scrapePromises = [];
+        try {
+            const page = await browser.newPage();
+            await scrapeWebsiteWithCookies(page, targetUrl);
+            // await page.close();
+        } catch (error) {
+            console.error(`Error scraping URL: ${targetUrl}`, error);
+        }
+    });
 
-    // Process the CSV data
-    fs.createReadStream(csvFilePath)
-        .pipe(csv())
-        .on('data', (row) => {
-            const targetUrl = `https://www.apartmentdata.com/EXERequest/ADC_ShowEBrochure.asp?MODE=${row.id}&MODE2=StartFromTop_Directory&VIP=010`;
-
-            console.debug(targetUrl)
-            
-
-            // Create a new page for each row
-            scrapePromises.push(
-                (async () => {
-                    try{
-                        const page = await browser.newPage();
-                        // Increase timeout to 60 seconds
-                        page.setDefaultNavigationTimeout(60000); // 60 seconds
-                        await scrapeWebsiteWithCookies(page, targetUrl);
-                        await page.close();
-                    } catch(error){
-                        console.error(error)
-                    }
-                })()
-            );
-        })
-        .on('end', async () => {
-            // Wait for all scraping promises to resolve
-            await Promise.all(scrapePromises);
-
-            // Close the browser
-            await browser.close();
-
-            console.log('CSV file successfully processed');
-            console.log('Scraping completed.');
-        });
+    await Promise.all(scrapePromises);  // Wait for all scraping tasks to finish
 }
 
+// Process a single CSV file
+async function processCSVFile(browser, csvFilePath) {
+    let batch = [];
 
-// main();
-// Call the main function
+    return new Promise((resolve, reject) => {
+        fs.createReadStream(csvFilePath)
+            .pipe(csv())
+            .on('data', (row) => {
+                batch.push(row);
+
+                // Process the batch when it's full
+                if (batch.length === BATCH_SIZE) {
+                    processBatch(browser, batch).catch(console.error);
+                    batch = [];  // Reset batch
+                }
+            })
+            .on('end', async () => {
+                // Process any remaining rows in the last batch
+                if (batch.length > 0) {
+                    await processBatch(browser, batch);
+                }
+
+                console.log(`Finished processing file: ${csvFilePath}`);
+                resolve();
+            })
+            .on('error', (error) => {
+                console.error(`Error processing file: ${csvFilePath}`, error);
+                reject(error);
+            });
+    });
+}
+
+// Main function to read files from a directory and process each one
+async function main() {
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
+
+    // Read all CSV files from the directory
+    fs.readdir(DIRECTORY_PATH, async (err, files) => {
+        if (err) {
+            console.error('Error reading directory:', err);
+            return;
+        }
+
+        // Filter CSV files
+        const csvFiles = files.filter((file) => path.extname(file) === '.csv');
+
+        // Process each CSV file one by one
+        for (const file of csvFiles) {
+            const filePath = path.join(DIRECTORY_PATH, file);
+            console.log(`Processing file: ${filePath}`);
+
+            await processCSVFile(browser, filePath).then(()=>{
+                console.debug("Finished all")
+            });
+        }
+
+        // Close the browser after all files are processed
+        // await browser.close();
+        console.log('All files successfully processed');
+    });
+    
+}
+
 main().catch((error) => {
     console.error('Error in main execution:', error);
 });
