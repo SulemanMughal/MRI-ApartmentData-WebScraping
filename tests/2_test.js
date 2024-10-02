@@ -476,9 +476,7 @@ async function main() {
             const filePath = path.join(DIRECTORY_PATH, file);
             console.log(`Processing file: ${filePath}`);
 
-            await processCSVFile(browser, filePath).then(()=>{
-                console.debug("Finished all")
-            });
+            await processCSVFile(browser, filePath)
         }
 
         // Close the browser after all files are processed
