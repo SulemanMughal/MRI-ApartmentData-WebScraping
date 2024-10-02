@@ -1278,3 +1278,23 @@ Traceback (most recent call last):
   File "/home/unicorn/Documents/FalconXsoft/apartments/MRI-ApartmentData-WebScraping/bot/get_apartment_details.py", line 73, in get_details
     apartment_address_value = apartment_address_elem.next_sibling.strip()  # Strip to remove extra whitespace
 TypeError: 'NoneType' object is not callable
+ERROR:selenium.webdriver.common.service:Service process refused to terminate gracefully with SIGTERM, escalating to SIGKILL.
+Traceback (most recent call last):
+  File "C:\Users\unicorn\Documents\users\MRI-ApartmentData-WebScraping\env_mri_apartments_scrapper\Lib\site-packages\selenium\webdriver\common\service.py", line 172, in _terminate_process
+    self.process.wait(60)
+  File "C:\Program Files\Python311\Lib\subprocess.py", line 1260, in wait
+    return self._wait(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python311\Lib\subprocess.py", line 1544, in _wait
+    raise TimeoutExpired(self.args, timeout)
+subprocess.TimeoutExpired: Command '['C:\\Users\\unicorn\\.cache\\selenium\\chromedriver\\win64\\129.0.6668.70\\chromedriver.exe', '--port=49198']' timed out after 60 seconds
+ERROR:selenium.webdriver.common.service:Service process refused to terminate gracefully with SIGTERM, escalating to SIGKILL.
+Traceback (most recent call last):
+  File "C:\Users\unicorn\Documents\users\MRI-ApartmentData-WebScraping\env_mri_apartments_scrapper\Lib\site-packages\selenium\webdriver\common\service.py", line 172, in _terminate_process
+    self.process.wait(60)
+  File "C:\Program Files\Python311\Lib\subprocess.py", line 1260, in wait
+    return self._wait(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python311\Lib\subprocess.py", line 1544, in _wait
+    raise TimeoutExpired(self.args, timeout)
+subprocess.TimeoutExpired: Command '['C:\\Users\\unicorn\\.cache\\selenium\\chromedriver\\win64\\129.0.6668.70\\chromedriver.exe', '--port=49237']' timed out after 60 seconds

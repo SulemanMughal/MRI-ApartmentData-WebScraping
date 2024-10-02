@@ -46,7 +46,10 @@ async function processRowWithPuppeteer(row) {
         // console.debug(targetUrl)
 
         // Start Puppeteer and scrape the data
-        const browser = await puppeteer.launch({ headless: true }); // Launch the browser
+        const browser = await puppeteer.launch({ headless: true,
+            defaultViewport: null,
+        ignoreHTTPSErrors: true
+         }); // Launch the browser
         const page = await browser.newPage(); // Open a new page
 
         const cookiesString = fs.readFileSync('cookies.json', 'utf8');

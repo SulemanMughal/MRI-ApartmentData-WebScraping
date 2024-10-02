@@ -16,8 +16,10 @@ def get_response(target_url):
 
     # Initialize Chrome driver (ChromeDriver must be in your system's PATH)
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Optional: Uncomment for headless mode
+    chrome_options.add_argument('--log-level=1')
 
+    chrome_options.add_argument("--headless")  # Optional: Uncomment for headless mode
+    chrome_options.add_argument('--log-level=3')
     driver = webdriver.Chrome(options=chrome_options)
 
     # Open the URL
@@ -31,8 +33,11 @@ def get_response(target_url):
     # first_button.click()
 
     # Select the anchor tag with onclick attribute that starts with 'FormActionSubmit'
-    button = driver.find_element(By.XPATH, "/html/body/table/tbody/tr[2]/td/font/form/table[1]/tbody/tr/td[3]/table[1]/tbody/tr[2]/td/div/a")
-    button.click()
+    try:
+        button = driver.find_element(By.XPATH, "/html/body/table/tbody/tr[2]/td/font/form/table[1]/tbody/tr/td[3]/table[1]/tbody/tr[2]/td/div/a")
+        button.click()
+    except:
+        pass
 
 
     # Wait for the page to load (adjust sleep if needed for your use case)
