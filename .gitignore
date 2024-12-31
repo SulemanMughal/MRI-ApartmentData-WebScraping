@@ -296,7 +296,7 @@ dist
 
 screenshot
 
-cookies.json
+
 
 
 node_modules/*
@@ -309,7 +309,7 @@ tests/screenshot
 
 tests/screenshot/*
 
-tests/cookies.json
+
 
 tests/*.csv
 
@@ -317,4 +317,6 @@ project_files.txt
 
 
 my_env
+
+
 

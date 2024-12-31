@@ -5,6 +5,6 @@
         "csv-write-stream": "^2.0.0",
         "p-limit": "^6.1.0",
         "promise-limit": "^2.7.0",
-        "puppeteer": "^23.4.1"
+        "puppeteer": "^23.11.1"
     }
 }
